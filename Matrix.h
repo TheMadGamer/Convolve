@@ -8,6 +8,8 @@
 
 #include <assert.h>
 
+typedef unsigned char uchar;
+
 namespace Dog3d {
 
   class Matrix 
@@ -28,24 +30,29 @@ namespace Dog3d {
       
       void init() 
       {
-          m_data = new float[m_width * m_height];
+          m_data = new uchar[m_width * m_height];
           assert(m_data);
       }
       
       void init(int width, int height);
       
-      inline void zero() { memset(m_data, 0, m_width*m_height*sizeof(float));}
+      inline void zero() { memset(m_data, 0, m_width*m_height*sizeof(uchar));}
       
+      // simple test routines
       void identity();
+      void greyStreak();
+
+      // random data
+      void random();
       
       void computeDx( Matrix &m ) const;
       void computeDy( Matrix &m ) const;
        
-      inline const float *getRow(int i) const {
+      inline const uchar *getRow(int i) const {
           return m_data + (i * m_width);
       }
       
-      inline float *getRow(int i) {
+      inline uchar *getRow(int i) {
           return m_data + (i * m_width);
       }
       
@@ -53,7 +60,7 @@ namespace Dog3d {
       inline int height() const { return m_height; }
       
     private:
-      float *m_data;
+      uchar *m_data;
       int m_width;
       int m_height;
   };
