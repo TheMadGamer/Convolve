@@ -16,13 +16,22 @@ int main (int argc, const char * argv[]) {
     Matrix smallMatrix;
     smallMatrix.init(10,10);
     
-    Matrix dx = smallMatrix;
-    Matrix dy = smallMatrix;
+    smallMatrix.identity();
     
+    std::cout << smallMatrix << endl;
+    
+    Matrix dx = smallMatrix;
+    dx.init();
+        
+    Matrix dy = smallMatrix;
+    dy.init();
+        
     smallMatrix.computeDx(dx);
     smallMatrix.computeDy(dy);
     
-    
+    std::cout << dx << endl;
+    std::cout << dy << endl;
+
 
     return 0;
 }
