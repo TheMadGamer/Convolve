@@ -2,10 +2,11 @@
 //  main.cpp
 //  Convolve
 
-
+#include <iomanip>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "Matrix.h"
 
@@ -57,6 +58,11 @@ void testRandom(int width, int height)
     
     testMatrix.random();
     
+    time_t start;
+    time_t end;
+    
+    time(&start);
+    
     Matrix dx = testMatrix;
     dx.init();
     testMatrix.computeDx(dx);
@@ -65,9 +71,15 @@ void testRandom(int width, int height)
     dy.init();            
     testMatrix.computeDy(dy);
     
+    time(&end);
+    
+    double timeDifference = difftime(end,start);
+    
     cout << testMatrix << endl;
     cout << dx << endl;
     cout << dy << endl;
+
+    cout << "Ran in " << setprecision(4) << timeDifference << " seconds" << endl;
 
 }
 

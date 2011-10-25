@@ -70,11 +70,7 @@ static inline uchar clampDifference(unsigned int lower, unsigned int upper)
 {
     int newValue = upper - lower;
 
-    if (newValue > 255) 
-    { 
-        return 255;
-    } 
-    else if (newValue < 0) 
+    if (newValue < 0) 
     {
         return 0;
     }
