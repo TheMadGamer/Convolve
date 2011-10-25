@@ -66,8 +66,10 @@ void Matrix::random() {
 }
 
 // prevent over/underflow
-static inline uchar clampUInt(int newValue)
+static inline uchar clampDifference(unsigned int lower, unsigned int upper)
 {
+    int newValue = upper - lower;
+
     if (newValue > 255) 
     { 
         return 255;
@@ -90,21 +92,18 @@ void Matrix::computeDx( Matrix &m ) const
         uchar *dest_row = m.getRow(i);
         
         {
-            int newValue = -*(source_row) + *(source_row+1);
-            *dest_row++ = clampUInt(newValue);
+            *dest_row++ = clampDifference(*(source_row), *(source_row+1));
             source_row++;
         }
                 
         for(int j = 1; j < m_width - 1; j++) 
         {
-            int newValue =  -*(source_row-1) + *(source_row+1);
-            *dest_row++ = clampUInt(newValue);
+            *dest_row++  = clampDifference(*(source_row-1), *(source_row+1));
             source_row++;
         }
         
         {
-            int newValue = -*(source_row-1) + *source_row;
-            *dest_row = clampUInt(newValue);
+            *dest_row++  = clampDifference(*(source_row-1), *source_row);
         }
     }
 }
@@ -117,8 +116,7 @@ void Matrix::computeDy( Matrix &m ) const
       uchar *dest_row = m.getRow(0);
       for(int j = 0; j < m_width; j++) 
       {
-         float newValue = -*(source_row_lower++) + *(source_row_upper++);
-         *dest_row++ = clampUInt(newValue);
+         *dest_row++ = clampDifference(*(source_row_lower++), *(source_row_upper++));
       }
     }
     
@@ -130,8 +128,7 @@ void Matrix::computeDy( Matrix &m ) const
         uchar *dest_row = m.getRow(i);
         for(int j = 0; j < m_width; j++) 
         {
-            float newValue = -*(source_row_lower++) + *(source_row_upper++);
-            *dest_row++ = clampUInt(newValue);
+            *dest_row++ = clampDifference(*(source_row_lower++), *(source_row_upper++));
         }
     }
     
@@ -141,8 +138,7 @@ void Matrix::computeDy( Matrix &m ) const
         uchar *dest_row = m.getRow(m.height()-1);
         for(int j = 0; j < m_width; j++) 
         {
-            float newValue = -*(source_row_lower++) + *(source_row_upper++);
-            *dest_row++ = clampUInt(newValue);
+            *dest_row++ = clampDifference(*(source_row_lower++), *(source_row_upper++));
         }
     }
 }
