@@ -49,24 +49,52 @@ void Matrix::computeDx( Matrix &m ) const
         const float *source_row = getRow(i);
         float *dest_row = m.getRow(i);
         
-        float newValue = -*(source_row) + *(source_row+1);
+        *dest_row++ = -*(source_row) + *(source_row+1);
         source_row++;
-        *dest_row++ = newValue;
+        
         for(int j = 1; j < m_width - 1; j++) 
         {
-            newValue = -*(source_row-1) + *(source_row+1);
+            *dest_row++ =  -*(source_row-1) + *(source_row+1);
             source_row++;
-           *dest_row++ = newValue;
         }
         
-        newValue = -*(source_row-1) + *source_row;
-        *dest_row = newValue;
+        *dest_row = -*(source_row-1) + *source_row;
     }
 }
 
 void Matrix::computeDy( Matrix &m ) const 
 {
-
+    {
+      const float *source_row_lower = getRow(0);
+      const float *source_row_upper = getRow(1);
+      float *dest_row = m.getRow(0);
+      for(int j = 0; j < m_width; j++) 
+      {
+        *dest_row++ = -*(source_row_lower++) + *(source_row_upper++);
+      }
+    }
+    
+    for(int i = 1; i < m_height-1; i++) 
+    {
+        const float *source_row_lower = getRow(i-1);
+        const float *source_row_upper = getRow(i+1);
+        
+        float *dest_row = m.getRow(i);
+        for(int j = 0; j < m_width; j++) 
+        {
+            *dest_row++ = -*(source_row_lower++) + *(source_row_upper++);
+        }
+    }
+    
+    {
+        const float *source_row_lower = getRow(m.height()-2);
+        const float *source_row_upper = getRow(m.height()-1);
+        float *dest_row = m.getRow(m.height()-1);
+        for(int j = 0; j < m_width; j++) 
+        {
+            *dest_row++ = -*(source_row_lower++) + *(source_row_upper++);
+        }
+    }
 }
 
 ostream &operator<<(ostream &stream, const Matrix &m) {
