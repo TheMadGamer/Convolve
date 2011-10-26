@@ -1,1 +1,11 @@
-Basic matrix derivative example.
+Basic matrix derivative example.  Builds a random matrix of specified size.  Computes finite difference dx and dy.  Computes min/max of dx and dy matrices.
+
+To build:
+
+g++ -O3 main.cpp Matrix.cpp -o Convolve
+
+To run:
+./Convolve 10 20
+
+
+There is a multi-threaded version in multi-thread.  But it's actually slower.

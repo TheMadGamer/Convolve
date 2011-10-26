@@ -110,12 +110,12 @@ int main (int argc, const char * argv[]) {
         testRandom(12, 13);
         testRandom(1024, 2048, false);
     }
-    else if(argc >= 3)
+    else if(argc == 3)
     {
         int width = atoi(argv[1]);
         int height = atoi(argv[2]);
     
-        testRandom(width, height, argc == 3);
+        testRandom(width, height);
     }
     else 
     {
