@@ -46,10 +46,12 @@ namespace Dog3d
 
         // random data
         void random();
-
+        
+        // Computes finite difference derivatives (ie convolves in x,y directions with [-1 0 1])
         void computeDx( Matrix &m, uchar &dxMin, uchar &dxMax ) const;
         void computeDy( Matrix &m, uchar &dyMin, uchar &dyMax ) const;
 
+        // inline row accessors
         inline const uchar *getRow(int i) const 
         {
             return m_data + (i * m_width);
