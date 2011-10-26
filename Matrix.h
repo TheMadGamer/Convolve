@@ -45,8 +45,8 @@ namespace Dog3d {
       // random data
       void random();
       
-      void computeDx( Matrix &m ) const;
-      void computeDy( Matrix &m ) const;
+      void computeDx( Matrix &m, uchar &dxMin, uchar &dxMax ) const;
+      void computeDy( Matrix &m, uchar &dyMin, uchar &dyMax ) const;
        
       inline const uchar *getRow(int i) const {
           return m_data + (i * m_width);

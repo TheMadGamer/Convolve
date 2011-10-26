@@ -13,7 +13,7 @@
 using namespace Dog3d;
 using namespace std;
 
-void testRandom(int width, int height);
+void testRandom(int width, int height, bool printMatrix=true);
 void basicTest();
 
 void basicTest() {
@@ -31,9 +31,14 @@ void basicTest() {
         
     Matrix dy = smallMatrix;
     dy.init();
-        
-    smallMatrix.computeDx(dx);
-    smallMatrix.computeDy(dy);
+    
+    uchar dxMin;
+    uchar dxMax;
+    uchar dyMin;
+    uchar dyMax;
+    
+    smallMatrix.computeDx(dx, dxMin, dxMax);
+    smallMatrix.computeDy(dy, dyMin, dyMax);
     
     std::cout << dx << endl;
     std::cout << dy << endl;
@@ -43,44 +48,59 @@ void basicTest() {
     
     std::cout << smallMatrix << endl;
     
-    smallMatrix.computeDx(dx);
-    smallMatrix.computeDy(dy);
+    smallMatrix.computeDx(dx, dxMin, dxMax);
+    smallMatrix.computeDy(dy, dyMin, dyMax);
     
     std::cout << dx << endl;
     std::cout << dy << endl;
 }
 
-void testRandom(int width, int height) 
+// Convolves a random matrix of |width| x |height|
+// Prints out results (convolved matrix and min/max values).
+// Times the computation.
+void testRandom(int width, int height, bool printMatrix) 
 {
-    
     Matrix testMatrix;
     testMatrix.init(width,height);
     
     testMatrix.random();
     
-    time_t start;
-    time_t end;
+    clock_t start;
+    clock_t end;
     
-    time(&start);
+    start = clock();
     
+    uchar dxMin;
+    uchar dxMax;
     Matrix dx = testMatrix;
     dx.init();
-    testMatrix.computeDx(dx);
-        
+    testMatrix.computeDx(dx, dxMin, dxMax);
+    
+    uchar dyMin;
+    uchar dyMax;
     Matrix dy = testMatrix;
     dy.init();            
-    testMatrix.computeDy(dy);
+    testMatrix.computeDy(dy, dyMin, dyMax);
     
-    time(&end);
+    end = clock();
     
-    double timeDifference = difftime(end,start);
+    float timeDifference = ((float) (end - start)) / CLOCKS_PER_SEC;
     
-    cout << testMatrix << endl;
-    cout << dx << endl;
-    cout << dy << endl;
-
+    if (printMatrix) 
+    {
+        cout << testMatrix << endl;
+        cout << dx << endl;
+    }
+    cout << "min: " << ((int) dxMin) << " max: " << 
+        ((int)dxMax) << endl;
+    
+    if (printMatrix) 
+    {
+        cout << dy << endl;
+        cout << "min: " << ((int) dyMin) << " max: " << 
+            ((int)dyMax) << endl;
+    }
     cout << "Ran in " << setprecision(4) << timeDifference << " seconds" << endl;
-
 }
 
 int main (int argc, const char * argv[]) {
@@ -92,25 +112,15 @@ int main (int argc, const char * argv[]) {
 
         testRandom(12, 13);
 
-    } 
+        testRandom(1024, 2048, false);
+
+    }
     else if(argc == 2)
     {
         int width = atoi(argv[1]);
         int height = atoi(argv[2]);
     
-        Matrix testMatrix;
-        testMatrix.init(width,height);
-        
-        testMatrix.random();
-        
-        Matrix dx = testMatrix;
-        dx.init();
-        testMatrix.computeDx(dx);
-            
-        Matrix dy = testMatrix;
-        dy.init();            
-        testMatrix.computeDy(dy);
-        
+        testRandom(width, height);
     }
     else 
     {

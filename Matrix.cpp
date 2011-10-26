@@ -42,7 +42,8 @@ void Matrix::identity() {
     }
 }
 
-void Matrix::greyStreak() {
+void Matrix::greyStreak() 
+{
     // cannot set identity in non square matrix
     assert(m_width == m_height);
     
@@ -54,8 +55,8 @@ void Matrix::greyStreak() {
     }
 }
 
-void Matrix::random() { 
-    
+void Matrix::random() 
+{     
     uchar *data = m_data;
     uchar *end = data + m_height * m_width;
     
@@ -80,40 +81,85 @@ static inline uchar clampDifference(unsigned int lower, unsigned int upper)
     }
 }
 
-void Matrix::computeDx( Matrix &m ) const
+void Matrix::computeDx( Matrix &m, uchar &dxMin, uchar &dxMax ) const
 {
+    dxMin = 255;
+    dxMax = 0;
+
     for(int i = 0; i < m_height; i++) 
     {
         const uchar *source_row = getRow(i);
         uchar *dest_row = m.getRow(i);
         
+        // first column
         {
-            *dest_row++ = clampDifference(*(source_row), *(source_row+1));
-            source_row++;
-        }
-                
-        for(int j = 1; j < m_width - 1; j++) 
-        {
-            *dest_row++  = clampDifference(*(source_row-1), *(source_row+1));
+            uchar value = clampDifference(*(source_row), *(source_row+1));
+            if (value > dxMax) 
+            {
+                dxMax = value;
+            }
+            if (value < dxMin) 
+            {
+                dxMin = value;
+            }
+            *dest_row++ = value;
             source_row++;
         }
         
+        // everything in between
+        for(int j = 1; j < m_width - 1; j++) 
         {
-            *dest_row++  = clampDifference(*(source_row-1), *source_row);
+            uchar value = clampDifference(*(source_row-1), *(source_row+1));
+            if (value > dxMax) 
+            {
+                dxMax = value;
+            }
+            if (value < dxMin) 
+            {
+                dxMin = value;
+            }
+            *dest_row++ = value;
+            source_row++;
+        }
+        
+        // last column
+        {
+            uchar value = clampDifference(*(source_row-1), *source_row);
+            if (value > dxMax) 
+            {
+                dxMax = value;
+            }
+            if (value < dxMin) 
+            {
+                dxMin = value;
+            }
+            
+            *dest_row++ = value;
         }
     }
 }
 
-void Matrix::computeDy( Matrix &m ) const 
+void Matrix::computeDy( Matrix &m, uchar &dyMin, uchar &dyMax  ) const 
 {
+    dyMin = 255;
+    dyMax = 0;
     {
-      const uchar *source_row_lower = getRow(0);
-      const uchar *source_row_upper = getRow(1);
-      uchar *dest_row = m.getRow(0);
-      for(int j = 0; j < m_width; j++) 
-      {
-         *dest_row++ = clampDifference(*(source_row_lower++), *(source_row_upper++));
-      }
+        const uchar *source_row_lower = getRow(0);
+        const uchar *source_row_upper = getRow(1);
+        uchar *dest_row = m.getRow(0);
+        for(int j = 0; j < m_width; j++) 
+        {
+            uchar value = clampDifference(*(source_row_lower++), *(source_row_upper++));
+            if (dyMin > value)
+            {
+                dyMin = value;
+            }
+            if (dyMax < value)
+            {
+                dyMax = value;
+            }
+            *dest_row++ = value;
+        }
     }
     
     for(int i = 1; i < m_height-1; i++) 
@@ -124,7 +170,18 @@ void Matrix::computeDy( Matrix &m ) const
         uchar *dest_row = m.getRow(i);
         for(int j = 0; j < m_width; j++) 
         {
-            *dest_row++ = clampDifference(*(source_row_lower++), *(source_row_upper++));
+            uchar value = clampDifference(*(source_row_lower++), *(source_row_upper++));
+            
+            if (dyMin > value)
+            {
+                dyMin = value;
+            }
+            if (dyMax < value)
+            {
+                dyMax = value;
+            }
+            
+            *dest_row++ = value;
         }
     }
     
@@ -134,15 +191,28 @@ void Matrix::computeDy( Matrix &m ) const
         uchar *dest_row = m.getRow(m.height()-1);
         for(int j = 0; j < m_width; j++) 
         {
-            *dest_row++ = clampDifference(*(source_row_lower++), *(source_row_upper++));
+            uchar value = clampDifference(*(source_row_lower++), *(source_row_upper++));
+            
+            if (dyMin > value)
+            {
+                dyMin = value;
+            }
+            if (dyMax < value)
+            {
+                dyMax = value;
+            }
+            
+            *dest_row++ = value;
         }
     }
 }
 
 ostream &operator<<(ostream &stream, const Matrix &m) {
-    for(int i = 0; i < m.height(); i++) {
+    for(int i = 0; i < m.height(); i++) 
+    {
         const uchar *row = m.getRow(i);
-        for(int j = 0; j < m.width(); j++) {
+        for(int j = 0; j < m.width(); j++)
+        {
             stream << ((int) *row++) << " ";
         }
         stream << std::endl;
