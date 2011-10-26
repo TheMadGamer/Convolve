@@ -66,9 +66,12 @@ void Matrix::random()
     }
 }
 
-// prevent over/underflow
+// prevent underflow
+// overflow is not an issue
 static inline uchar clampDifference(unsigned int lower, unsigned int upper)
 {
+    // make sure we have space for uchar computation
+    // don't underflow
     int newValue = upper - lower;
 
     if (newValue < 0) 
@@ -143,6 +146,8 @@ void Matrix::computeDy( Matrix &m, uchar &dyMin, uchar &dyMax  ) const
 {
     dyMin = 255;
     dyMax = 0;
+    
+    // compute top row's dY using column's 0,1
     {
         const uchar *source_row_lower = getRow(0);
         const uchar *source_row_upper = getRow(1);
@@ -162,6 +167,7 @@ void Matrix::computeDy( Matrix &m, uchar &dyMin, uchar &dyMax  ) const
         }
     }
     
+    // compute middle rows
     for(int i = 1; i < m_height-1; i++) 
     {
         const uchar *source_row_lower = getRow(i-1);
@@ -185,6 +191,7 @@ void Matrix::computeDy( Matrix &m, uchar &dyMin, uchar &dyMax  ) const
         }
     }
     
+    // compute bottom row's dy using columns n-2, n-1
     {
         const uchar *source_row_lower = getRow(m.height()-2);
         const uchar *source_row_upper = getRow(m.height()-1);
@@ -207,7 +214,8 @@ void Matrix::computeDy( Matrix &m, uchar &dyMin, uchar &dyMax  ) const
     }
 }
 
-ostream &operator<<(ostream &stream, const Matrix &m) {
+ostream &operator<<(ostream &stream, const Matrix &m) 
+{
     for(int i = 0; i < m.height(); i++) 
     {
         const uchar *row = m.getRow(i);
