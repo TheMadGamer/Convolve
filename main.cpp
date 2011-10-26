@@ -11,6 +11,13 @@
 
 #include "Matrix.h"
 
+// To run:
+// ./Convolve 100 100 
+
+// To run multi-thread (slower):
+// ./Convolve 100 100 y
+
+
 using namespace Dog3d;
 using namespace std;
 
@@ -116,13 +123,13 @@ void testRandom(int width, int height, bool printMatrix)
 void *computeDx(void *) 
 {
     g_matrix.computeDx(g_dx, g_dxMin, g_dxMax);   
-    return NULL;
+    pthread_exit(NULL);
 }
 
 void *computeDy(void *) 
 {
     g_matrix.computeDy(g_dy, g_dyMin, g_dyMax);  
-    return NULL; 
+    pthread_exit(NULL);
 }
 
 // Computes dX and dY of a random matrix of |width| x |height| 
@@ -146,7 +153,6 @@ void threadedTest(int width, int height, bool printMatrix)
     pthread_t threads[2];
     
     returnCode = pthread_create(&threads[0], NULL, computeDx, NULL);
-    computeDx(NULL);
     
     if (returnCode){
        printf("ERROR; return code from pthread_create() is %d\n", returnCode);
@@ -154,11 +160,14 @@ void threadedTest(int width, int height, bool printMatrix)
     }
     
     returnCode = pthread_create(&threads[1], NULL, computeDy, NULL);
-    computeDy(NULL);
+
     if (returnCode){
        printf("ERROR; return code from pthread_create() is %d\n", returnCode);
        exit(-1);
     }
+    
+    pthread_join(threads[0], NULL);
+    pthread_join(threads[1], NULL);
     
     end = clock();
     float timeDifference = ((float) (end - start)) / CLOCKS_PER_SEC;
@@ -182,8 +191,6 @@ void threadedTest(int width, int height, bool printMatrix)
     }
     cout << "Convolution ran in " << setprecision(4) << timeDifference << " seconds" << endl;
     
-    pthread_join(threads[0], NULL);
-    pthread_join(threads[1], NULL);
     pthread_exit(NULL);
 }
 
@@ -203,7 +210,7 @@ int main (int argc, const char * argv[]) {
         int height = atoi(argv[2]);
             
         cout << "Running single-thread test " << endl;
-        testRandom(width, height);
+        testRandom(width, height, true);
     }
     else if(argc == 4)
     {
@@ -211,7 +218,7 @@ int main (int argc, const char * argv[]) {
         int height = atoi(argv[2]);
     
         cout << "Running multi-threaded test " << endl;
-        threadedTest(width, height);
+        threadedTest(width, height, true);
     }
     else 
     {
