@@ -53,7 +53,7 @@ void basicTest() {
 
 // Computes dX and dY of a random matrix of |width| x |height| 
 // Prints out results (convolved matrices and min/max values).
-// Times the computation and displays results
+// Times the computation and displays results.
 void testRandom(int width, int height, bool printMatrix) 
 {
     Matrix testMatrix;
@@ -84,18 +84,21 @@ void testRandom(int width, int height, bool printMatrix)
     // Display results to cout
     if (printMatrix) 
     {
+        cout << endl << "Random Matrix" << endl << endl;
         cout << testMatrix << endl;
+        cout << "dX Matrix" << endl << endl;
         cout << dx << endl;
     }
     cout << "min: " << ((int) dxMin) << " max: " << 
-        ((int)dxMax) << endl;
+        ((int)dxMax) << endl << endl;
     
     if (printMatrix) 
     {
+        cout << "dY Matrix" << endl << endl; 
         cout << dy << endl;
-        cout << "min: " << ((int) dyMin) << " max: " <<  ((int)dyMax) << endl;
+        cout << "min: " << ((int) dyMin) << " max: " <<  ((int)dyMax) << endl << endl;
     }
-    cout << "Ran in " << setprecision(4) << timeDifference << " seconds" << endl;
+    cout << "Convolution ran in " << setprecision(4) << timeDifference << " seconds" << endl;
 }
 
 int main (int argc, const char * argv[]) {
@@ -107,12 +110,12 @@ int main (int argc, const char * argv[]) {
         testRandom(12, 13);
         testRandom(1024, 2048, false);
     }
-    else if(argc == 2)
+    else if(argc >= 3)
     {
         int width = atoi(argv[1]);
         int height = atoi(argv[2]);
     
-        testRandom(width, height);
+        testRandom(width, height, argc == 3);
     }
     else 
     {
